@@ -41,4 +41,17 @@ body {
   background: var(--background-color);
 }
 
+/*----------  HEADER  ----------*/
+
+header {
+  background: var(--header);
+}
+
+.title {
+  text-align: center;
+  font-size: 4.2rem;
+  padding: 0.5em 0.2em;
+  color: var(--headline-color);
+}
+
 }
