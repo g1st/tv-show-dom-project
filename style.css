@@ -54,4 +54,52 @@ header {
   color: var(--headline-color);
 }
 
+/*----------  MAIN  ----------*/
+
+main {
+  margin: 8rem 1rem;
 }
+
+.episodes {
+  margin: 0 auto;
+  max-width: 1200px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, 36rem);
+  grid-template-rows: auto;
+  column-gap: 5rem;
+  row-gap: 5rem;
+  justify-content: space-around;
+}
+
+.episode {
+  max-width: 36rem;
+  box-shadow: 0 6px 14px var(--shadow);
+  margin: 0 auto 4rem;
+  border-radius: 5px;
+  padding: 2em;
+  background: var(--card-bg);
+}
+
+.episode-title {
+  font-size: 2.4rem;
+  color: var(--subheadline-color);
+  font-weight: bold;
+}
+
+.episode-info {
+  margin-bottom: 1rem;
+}
+
+.episode-airdate,
+.episode-runtime {
+  color: var(--text-secondary);
+}
+
+.episode-image {
+  margin: 0 auto 2rem auto;
+}
+
+.episode-summary {
+  line-height: 1.5;
+}
+
