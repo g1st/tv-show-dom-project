@@ -25,6 +25,7 @@
   font-family: inherit;
   font-weight: normal;
   color: var(--text-primary);
+  box-sizing: inherit;
 }
 
 img {
@@ -63,12 +64,6 @@ main {
 .episodes {
   margin: 0 auto;
   max-width: 1200px;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, 36rem);
-  grid-template-rows: auto;
-  column-gap: 5rem;
-  row-gap: 5rem;
-  justify-content: space-around;
 }
 
 .episode {
@@ -140,4 +135,15 @@ footer a:before {
 footer a:hover:before {
   height: 4px;
   transform: scaleX(1);
+}
+
+@media (min-width: 37.5em) {
+  .episodes {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, 36rem);
+    grid-template-rows: auto;
+    column-gap: 5rem;
+    row-gap: 5rem;
+    justify-content: space-around;
+  }
 }
