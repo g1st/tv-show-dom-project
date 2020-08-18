@@ -50,15 +50,37 @@ header {
 
 .title {
   text-align: center;
-  font-size: 4.2rem;
+  font-size: 3.6rem;
   padding: 0.5em 0.2em;
   color: var(--headline-color);
+}
+
+.search {
+  width: 100%;
+  max-width: 30rem;
+  margin: 0 auto;
+  padding: 0 1rem 2rem;
+}
+
+.search-input {
+  width: 100%;
+  padding: 0.5em 0.75em;
+  color: var(--text-primary);
+}
+
+.search-input::placeholder {
+  color: var(--text-secondary);
+}
+
+.episodes-info {
+  margin-bottom: 3rem;
+  text-align: center;
 }
 
 /*----------  MAIN  ----------*/
 
 main {
-  margin: 8rem 1rem;
+  margin: 3rem 1rem 8rem 1rem;
 }
 
 .episodes {
@@ -138,6 +160,10 @@ footer a:hover:before {
 }
 
 @media (min-width: 37.5em) {
+  .title {
+    font-size: 4.2rem;
+  }
+
   .episodes {
     display: grid;
     grid-template-columns: repeat(auto-fit, 36rem);
@@ -145,5 +171,18 @@ footer a:hover:before {
     column-gap: 5rem;
     row-gap: 5rem;
     justify-content: space-around;
+  }
+}
+
+@media (min-width: 50.25em) {
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+  }
+
+  .search {
+    margin: 0;
+    padding: 0;
   }
 }

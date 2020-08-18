@@ -3,6 +3,7 @@ const main = document.getElementById('root');
 function setup() {
   makeHeader();
   makeFooter();
+  makeSearchBar();
 
   const allEpisodes = getAllEpisodes();
   makePageForEpisodes(allEpisodes);
@@ -17,6 +18,39 @@ function makeHeader() {
   main.parentElement.insertBefore(header, main);
 
   title.classList.add('title');
+}
+
+function makeSearchBar() {
+  const searchBar = document.createElement('div');
+  const searchInput = document.createElement('input');
+
+  document.querySelector('header').appendChild(searchBar);
+  searchBar.appendChild(searchInput);
+
+  searchBar.classList.add('search');
+  searchInput.classList.add('search-input');
+  searchInput.placeholder = 'Search...';
+
+  searchInput.addEventListener('input', handleSearch);
+
+  function handleSearch(event) {
+    const searchValue = event.target.value.toLowerCase();
+
+    const allEpisodes = getAllEpisodes();
+    const filteredShows = allEpisodes.filter(({ name, summary }) => {
+      return (
+        name.toLowerCase().includes(searchValue) ||
+        summary.toLowerCase().includes(searchValue)
+      );
+    });
+
+    // remove data before adding again to avoid duplication
+    document.querySelector('.episodes').remove();
+    document.querySelector('.episodes-info').remove();
+
+    // construct episodes view with search input applied
+    makePageForEpisodes(filteredShows);
+  }
 }
 
 function makeFooter() {
@@ -38,11 +72,18 @@ function makeFooter() {
 }
 
 function makePageForEpisodes(episodeList) {
+  const totalEpisodeNumber = getAllEpisodes().length;
+
   const episodesContainer = document.createElement('article');
+  const episodesCounterInfo = document.createElement('p');
 
   episodesContainer.classList.add('episodes');
+  episodesCounterInfo.classList.add('episodes-info');
 
+  main.appendChild(episodesCounterInfo);
   main.appendChild(episodesContainer);
+
+  episodesCounterInfo.textContent = `Displaying ${episodeList.length}/${totalEpisodeNumber} episodes.`;
 
   episodeList.forEach(
     ({ name, season, number, image, summary, airstamp, runtime }) => {
