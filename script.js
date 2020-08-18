@@ -4,6 +4,7 @@ function setup() {
   makeHeader();
   makeFooter();
   makeSearchBar();
+  makeEpisodeSelector();
 
   const allEpisodes = getAllEpisodes();
   makePageForEpisodes(allEpisodes);
@@ -12,19 +13,22 @@ function setup() {
 function makeHeader() {
   const header = document.createElement('header');
   const title = document.createElement('h1');
+  const headerContainer = document.createElement('div');
 
   title.textContent = 'Your best TV shows';
-  header.appendChild(title);
+  header.appendChild(headerContainer);
+  headerContainer.appendChild(title);
   main.parentElement.insertBefore(header, main);
 
   title.classList.add('title');
+  headerContainer.classList.add('container');
 }
 
 function makeSearchBar() {
   const searchBar = document.createElement('div');
   const searchInput = document.createElement('input');
 
-  document.querySelector('header').appendChild(searchBar);
+  document.querySelector('header .container').appendChild(searchBar);
   searchBar.appendChild(searchInput);
 
   searchBar.classList.add('search');
@@ -48,8 +52,62 @@ function makeSearchBar() {
     document.querySelector('.episodes').remove();
     document.querySelector('.episodes-info').remove();
 
+    // select 'All episodes' from selection list after typing in the search box as it's searching in all episodes
+    document.querySelector('.episode-select').firstChild.selected = true;
+
     // construct episodes view with search input applied
     makePageForEpisodes(filteredShows);
+  }
+}
+
+function makeEpisodeSelector() {
+  const selectDiv = document.createElement('div');
+  const episodeSelect = document.createElement('select');
+  const option = document.createElement('option');
+
+  selectDiv.appendChild(episodeSelect);
+  episodeSelect.appendChild(option);
+  document.querySelector('header .container').appendChild(selectDiv);
+
+  selectDiv.classList.add('select');
+  episodeSelect.classList.add('episode-select');
+  option.value = '';
+  option.textContent = 'All episodes';
+
+  const allEpisodes = getAllEpisodes();
+  allEpisodes.forEach(({ name, season, number }) => {
+    const option = document.createElement('option');
+    episodeSelect.appendChild(option);
+
+    const seasonAndEpisode = formatEpisodeTitle(season, number);
+    option.textContent = `${seasonAndEpisode} – ${name}`;
+    option.value = name;
+  });
+
+  episodeSelect.addEventListener('input', handleSelect);
+
+  function handleSelect(event) {
+    const episode = event.target.value;
+    const allEpisodes = getAllEpisodes();
+    const selectedEpisode = allEpisodes.filter(({ name }) => {
+      if (episode) {
+        // check for selected episode
+        return name === episode;
+      } else {
+        // no specific episode selected - return all episodes
+        return true;
+      }
+    });
+
+    // remove data before adding again to avoid duplication
+    document.querySelector('.episodes').remove();
+    document.querySelector('.episodes-info').remove();
+
+    // clear search term
+    document.querySelector('.search-input').value = '';
+
+    // construct episodes view with search input applied
+    makePageForEpisodes(selectedEpisode);
   }
 }
 

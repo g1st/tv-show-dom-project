@@ -16,6 +16,8 @@
   --footer: #232946;
   --footer-text: #b8c1ec;
   --link: #eebbc3;
+  --header-height: 22rem;
+  --footer-height: 10rem;
 }
 
 * {
@@ -46,16 +48,18 @@ body {
 
 header {
   background: var(--header);
+  height: var(--header-height);
 }
 
 .title {
   text-align: center;
-  font-size: 3.6rem;
+  font-size: 3.2rem;
   padding: 0.5em 0.2em;
   color: var(--headline-color);
 }
 
-.search {
+.search,
+.select {
   width: 100%;
   max-width: 30rem;
   margin: 0 auto;
@@ -73,18 +77,28 @@ header {
 }
 
 .episodes-info {
-  margin-bottom: 3rem;
+  padding: 3rem 0;
   text-align: center;
+}
+
+.episode-select {
+  display: block;
+  max-width: 30rem;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0.5em 0.75em;
 }
 
 /*----------  MAIN  ----------*/
 
 main {
-  margin: 3rem 1rem 8rem 1rem;
+  margin: 0 1rem;
+  min-height: calc(100vh - var(--header-height) - var(--footer-height));
+
 }
 
 .episodes {
-  margin: 0 auto;
+  margin: 4rem auto 8rem auto;
   max-width: 1200px;
 }
 
@@ -124,11 +138,13 @@ main {
 
 footer {
   background: var(--footer);
+  height: var(--footer-height);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 footer>p {
-  text-align: center;
-  padding: 3rem 0;
   color: var(--footer-text);
 }
 
@@ -160,6 +176,10 @@ footer a:hover:before {
 }
 
 @media (min-width: 37.5em) {
+  :root {
+    --header-height: 24rem;
+  }
+
   .title {
     font-size: 4.2rem;
   }
@@ -174,15 +194,26 @@ footer a:hover:before {
   }
 }
 
-@media (min-width: 50.25em) {
-  header {
-    display: flex;
-    align-items: center;
-    justify-content: space-around;
+@media (min-width: 75em) {
+  :root {
+    --header-height: 10rem;
   }
 
-  .search {
+  header .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .search,
+  .select {
     margin: 0;
     padding: 0;
+  }
+
+  .episodes {
+    margin-top: 8rem;
   }
 }
