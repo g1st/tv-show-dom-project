@@ -1,8 +1,7 @@
 /*----------  DEFAULTS AND COLORS  ----------*/
 
 :root {
-  font-family: 'Alata',
-    sans-serif;
+  font-family: 'Alata', sans-serif;
   font-size: 62.5%;
   box-sizing: border-box;
   --text-primary: #232946;
@@ -49,6 +48,9 @@ body {
 header {
   background: var(--header);
   height: var(--header-height);
+  position: fixed;
+  right: 0;
+  left: 0;
 }
 
 .title {
@@ -94,7 +96,7 @@ header {
 main {
   margin: 0 1rem;
   min-height: calc(100vh - var(--header-height) - var(--footer-height));
-
+  padding-top: var(--header-height);
 }
 
 .episodes {
@@ -144,7 +146,7 @@ footer {
   justify-content: center;
 }
 
-footer>p {
+footer > p {
   color: var(--footer-text);
 }
 
