@@ -178,10 +178,7 @@ function makePageForEpisodes(episodeList) {
       episodeImage.src = image.medium;
       episodeImage.alt = name;
 
-      // gets rid of <p> and </p>
-      const cleanSummary = summary.slice(3, -4);
-
-      episodeSummary.textContent = cleanSummary;
+      episodeSummary.innerHTML = summary;
     }
   );
 }
