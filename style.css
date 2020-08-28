@@ -95,7 +95,7 @@ header {
 
 main {
   margin: 0 1rem;
-  min-height: calc(100vh - var(--header-height) - var(--footer-height));
+  min-height: calc(100vh - var(--footer-height));
   padding-top: var(--header-height);
 }
 
@@ -146,7 +146,7 @@ footer {
   justify-content: center;
 }
 
-footer > p {
+footer>p {
   color: var(--footer-text);
 }
 
