@@ -1,13 +1,18 @@
 const main = document.getElementById('root');
+let allEpisodes;
 
 function setup() {
-  makeHeader();
-  makeFooter();
-  makeSearchBar();
-  makeEpisodeSelector();
+  // construct the page only when data arrives (not optimal); 82 - game of thrones
+  fetchEpisodesForShow(82).then((data) => {
+    allEpisodes = data;
 
-  const allEpisodes = getAllEpisodes();
-  makePageForEpisodes(allEpisodes);
+    makeHeader();
+    makeFooter();
+    makeSearchBar();
+    makeEpisodeSelector();
+
+    makePageForEpisodes(data);
+  });
 }
 
 function makeHeader() {
@@ -40,7 +45,6 @@ function makeSearchBar() {
   function handleSearch(event) {
     const searchValue = event.target.value.toLowerCase();
 
-    const allEpisodes = getAllEpisodes();
     const filteredShows = allEpisodes.filter(({ name, summary }) => {
       return (
         name.toLowerCase().includes(searchValue) ||
@@ -74,7 +78,6 @@ function makeEpisodeSelector() {
   option.value = '';
   option.textContent = 'All episodes';
 
-  const allEpisodes = getAllEpisodes();
   allEpisodes.forEach(({ name, season, number }) => {
     const option = document.createElement('option');
     episodeSelect.appendChild(option);
@@ -88,7 +91,6 @@ function makeEpisodeSelector() {
 
   function handleSelect(event) {
     const episode = event.target.value;
-    const allEpisodes = getAllEpisodes();
     const selectedEpisode = allEpisodes.filter(({ name }) => {
       if (episode) {
         // check for selected episode
@@ -130,7 +132,7 @@ function makeFooter() {
 }
 
 function makePageForEpisodes(episodeList) {
-  const totalEpisodeNumber = getAllEpisodes().length;
+  const totalEpisodeNumber = allEpisodes.length;
 
   const episodesContainer = document.createElement('article');
   const episodesCounterInfo = document.createElement('p');
@@ -141,7 +143,13 @@ function makePageForEpisodes(episodeList) {
   main.appendChild(episodesCounterInfo);
   main.appendChild(episodesContainer);
 
-  episodesCounterInfo.textContent = `Displaying ${episodeList.length}/${totalEpisodeNumber} episodes.`;
+  let displayMessage;
+  if (episodeList.length > 0) {
+    displayMessage = `Displaying ${episodeList.length}/${totalEpisodeNumber} episodes.`;
+  } else {
+    displayMessage = `Sorry, no match was found.`;
+  }
+  episodesCounterInfo.textContent = displayMessage;
 
   episodeList.forEach(
     ({ name, season, number, image, summary, airstamp, runtime }) => {
@@ -201,6 +209,12 @@ function formatEpisodeTitle(season, episode) {
   const episodeWithPad = episodeStr.padStart(2, '0');
 
   return `S${seasonWithPad}E${episodeWithPad}`;
+}
+
+function fetchEpisodesForShow(showId) {
+  return fetch(`https://api.tvmaze.com/shows/${showId}/episodes`)
+    .then((response) => response.json())
+    .then((data) => data);
 }
 
 window.onload = setup;
