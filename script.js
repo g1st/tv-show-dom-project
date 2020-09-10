@@ -8,6 +8,7 @@ function setup() {
 
     makeHeader();
     makeFooter();
+    makeShowSelector();
     makeSearchBar();
     makeEpisodeSelector();
 
@@ -19,26 +20,109 @@ function makeHeader() {
   const header = document.createElement('header');
   const title = document.createElement('h1');
   const headerContainer = document.createElement('div');
+  const inputs = document.createElement('div');
 
   title.textContent = 'Your best TV shows';
   header.appendChild(headerContainer);
   headerContainer.appendChild(title);
+  headerContainer.appendChild(inputs);
   main.parentElement.insertBefore(header, main);
 
   title.classList.add('title');
   headerContainer.classList.add('container');
+  inputs.classList.add('inputs');
+}
+
+function makeShowSelector() {
+  let shows;
+  fetchAllShows()
+    .then((data) => {
+      shows = data;
+      populateShowsSelector();
+    })
+    .catch((err) => console.log(err));
+
+  const showsDiv = document.createElement('div');
+  const showsSelect = document.createElement('select');
+  const option = document.createElement('option');
+
+  showsDiv.classList.add('shows');
+  showsSelect.classList.add('shows-select');
+
+  showsDiv.appendChild(showsSelect);
+  document.querySelector('.inputs').appendChild(showsDiv);
+
+  // this will be called only when data will arrive
+  function populateShowsSelector() {
+    shows
+      // sort by name
+      .sort((a, b) => a.name.localeCompare(b.name))
+      // add select option for each show
+      .forEach(({ name, id }) => {
+        const option = document.createElement('option');
+        showsSelect.appendChild(option);
+
+        option.textContent = name;
+        option.value = id;
+
+        // select Game Of Thrones (82) on page load / by default
+        if (id === 82) {
+          option.selected = true;
+        }
+      });
+  }
+
+  showsSelect.addEventListener('input', handleShowSelect);
+
+  function handleShowSelect(event) {
+    const showId = event.target.value;
+    const info = document.querySelector('.episodes-info');
+
+    // remove data before adding again to avoid duplication
+    document.querySelector('.episodes').remove();
+
+    // clear search term
+    document.querySelector('.search-input').value = '';
+
+    // display message, that episodes are being fetched
+    info.textContent = `Loading episodes for ${
+      // get show name by its id
+      shows.filter(({ id }) => Number(showId) === id)[0].name
+    }`;
+
+    fetchEpisodesForShow(showId)
+      .then((data) => {
+        // allEpisodes now changes to selected show's episodes
+        allEpisodes = data;
+        // remove loading info as data was fetched successfully
+        info.remove();
+        // remove current show's episode selector
+        document.querySelector('.select').remove();
+        // make episode selector for new show
+        makeEpisodeSelector();
+        // construct episodes for selected show
+        makePageForEpisodes(data);
+      })
+      .catch((error) => {
+        console.log(error);
+
+        // display error message to the user
+        info.textContent = "Sorry, can't find any episodes for this show...";
+      });
+  }
 }
 
 function makeSearchBar() {
   const searchBar = document.createElement('div');
   const searchInput = document.createElement('input');
 
-  document.querySelector('header .container').appendChild(searchBar);
+  document.querySelector('.inputs').appendChild(searchBar);
   searchBar.appendChild(searchInput);
 
   searchBar.classList.add('search');
   searchInput.classList.add('search-input');
   searchInput.placeholder = 'Search...';
+  searchInput.type = 'search';
 
   searchInput.addEventListener('input', handleSearch);
 
@@ -48,7 +132,7 @@ function makeSearchBar() {
     const filteredShows = allEpisodes.filter(({ name, summary }) => {
       return (
         name.toLowerCase().includes(searchValue) ||
-        summary.toLowerCase().includes(searchValue)
+        summary?.toLowerCase().includes(searchValue)
       );
     });
 
@@ -71,7 +155,9 @@ function makeEpisodeSelector() {
 
   selectDiv.appendChild(episodeSelect);
   episodeSelect.appendChild(option);
-  document.querySelector('header .container').appendChild(selectDiv);
+  document
+    .querySelector('.inputs')
+    .insertBefore(selectDiv, document.querySelector('.search'));
 
   selectDiv.classList.add('select');
   episodeSelect.classList.add('episode-select');
@@ -150,7 +236,6 @@ function makePageForEpisodes(episodeList) {
     displayMessage = `Sorry, no match was found.`;
   }
   episodesCounterInfo.textContent = displayMessage;
-
   episodeList.forEach(
     ({ name, season, number, image, summary, airstamp, runtime }) => {
       const episodeSection = document.createElement('section');
@@ -183,10 +268,10 @@ function makePageForEpisodes(episodeList) {
       episodeAirdate.textContent = `Airdate: ${formatAirdate(airstamp)}`;
       episodeRuntime.textContent = `Runtime: ${runtime} minutes`;
 
-      episodeImage.src = image.medium;
+      episodeImage.src = image?.medium || 'images/fallback-image.jpg';
       episodeImage.alt = name;
 
-      episodeSummary.innerHTML = summary;
+      episodeSummary.innerHTML = summary || 'No summary for this episode.';
     }
   );
 }
@@ -213,6 +298,12 @@ function formatEpisodeTitle(season, episode) {
 
 function fetchEpisodesForShow(showId) {
   return fetch(`https://api.tvmaze.com/shows/${showId}/episodes`)
+    .then((response) => response.json())
+    .then((data) => data);
+}
+
+function fetchAllShows() {
+  return fetch(`https://api.tvmaze.com/shows`)
     .then((response) => response.json())
     .then((data) => data);
 }
