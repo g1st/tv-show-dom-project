@@ -10,32 +10,20 @@ window.onload = setup;
 
 function makeHeader() {
   const header = document.createElement('header');
-  const title = document.createElement('h1');
-  const headerContainer = document.createElement('div');
-  const inputs = document.createElement('div');
+  const headerContainer = addElement('div', header, 'container');
+  const title = addElement('h1', headerContainer, 'title');
+  const inputs = addElement('div', headerContainer, 'inputs');
 
   title.textContent = 'Your best TV shows';
-  header.appendChild(headerContainer);
-  headerContainer.appendChild(title);
-  headerContainer.appendChild(inputs);
   main.parentElement.insertBefore(header, main);
-
-  title.classList.add('title');
-  headerContainer.classList.add('container');
-  inputs.classList.add('inputs');
 }
 
 // Shows page elements
 
 function makeShowSelector(shows) {
-  const showsDiv = document.createElement('div');
-  const showsSelect = document.createElement('select');
-
-  showsDiv.classList.add('shows');
-  showsSelect.classList.add('shows-select');
-
-  showsDiv.appendChild(showsSelect);
-  document.querySelector('.inputs').appendChild(showsDiv);
+  const inputs = document.querySelector('.inputs');
+  const showsDiv = addElement('div', inputs, 'shows');
+  const showsSelect = addElement('select', showsDiv, 'shows-select');
 
   populateShowsSelector(shows);
 
@@ -43,14 +31,10 @@ function makeShowSelector(shows) {
 }
 
 function makeShowSearchBar() {
-  const searchBar = document.createElement('div');
-  const searchInput = document.createElement('input');
+  const inputs = document.querySelector('.inputs');
+  const searchBar = addElement('div', inputs, 'show-search');
+  const searchInput = addElement('input', searchBar, 'show-search-input');
 
-  document.querySelector('.inputs').appendChild(searchBar);
-  searchBar.appendChild(searchInput);
-
-  searchBar.classList.add('show-search');
-  searchInput.classList.add('show-search-input');
   searchInput.placeholder = 'Filter for...';
   searchInput.type = 'search';
 
@@ -62,58 +46,30 @@ function makePageForShows(showList) {
   document.querySelector('.showsList')?.remove();
   document.querySelector('.shows-info')?.remove();
 
-
-  const showsContainer = document.createElement('article');
-  const showsCounterInfo = document.createElement('p');
-
-  showsContainer.classList.add('showsList');
-  showsCounterInfo.classList.add('shows-info');
-
-  main.appendChild(showsCounterInfo);
-  main.appendChild(showsContainer);
+  const showsCounterInfo = addElement('p', main, 'shows-info');
+  const showsContainer = addElement('article', main, 'showsList');
 
   let displayMessage = getDisplayMessage(showList, allShows, 'shows');
   showsCounterInfo.textContent = displayMessage;
 
   showList.forEach(
     ({ name, status, image, summary, genres, runtime, rating, id }) => {
-      const showSection = document.createElement('section');
-      const showTitle = document.createElement('h2');
-      const showInfo = document.createElement('div');
-      const showRuntime = document.createElement('p');
-      const showStatus = document.createElement('p');
-      const showRating = document.createElement('p');
-      const showGenres = document.createElement('p');
-      const showContent = document.createElement('div');
-      const showImage = document.createElement('img');
-      const showSummary = document.createElement('p');
-      const showWrapper = document.createElement('div');
-      const showInfoAndTitleWrapper = document.createElement('div');
+      const showSection = addElement('section', showsContainer, 'show');
+      const showWrapper = addElement('div', showSection, 'show-wrapper');
+      const showInfoAndTitleWrapper = addElement('div', showWrapper, 'show-info-wrapper');
+      const showTitle = addElement('h2', showInfoAndTitleWrapper, 'show-title');
+      const showInfo = addElement('div', showInfoAndTitleWrapper, 'show-info');
+      const showRuntime = addElement('p', showInfo);
+      const showStatus = addElement('p', showInfo);
+      const showRating = addElement('p', showInfo);
+      const showGenres = addElement('p', showInfo);
+      const showImage = addElement('img', showWrapper, 'show-image');
+      const showSummary = addElement('p', showSection, 'show-summary');
 
-      showsContainer.appendChild(showSection);
-      showInfo.appendChild(showRuntime);
-      showInfo.appendChild(showStatus);
-      showInfo.appendChild(showRating);
-      showInfo.appendChild(showGenres);
-
-      showInfoAndTitleWrapper.appendChild(showTitle);
-      showInfoAndTitleWrapper.appendChild(showInfo);
-      showWrapper.appendChild(showInfoAndTitleWrapper);
-      showWrapper.appendChild(showImage);
-      showSection.appendChild(showWrapper);
-      showSection.appendChild(showSummary);
-
-      showSection.classList.add('show');
-      showTitle.classList.add('show-title');
       showTitle.id = id;
       showTitle.tabIndex = 0; // enable selection with TAB key, good for a11y
-      showInfo.classList.add('show-info');
-      showImage.classList.add('show-image');
-      showSummary.classList.add('show-summary');
-      showWrapper.classList.add('show-wrapper');
-      showInfoAndTitleWrapper.classList.add('show-info-wrapper');
-
       showTitle.textContent = name;
+
       showRuntime.textContent = `Runtime: ${runtime} minutes`;
       showStatus.textContent = `Status: ${status}`;
       showRating.textContent = `Rating: ${rating.average}`;
@@ -133,42 +89,33 @@ function makePageForShows(showList) {
 // Episodes page elements
 
 function makeEpisodeSelector() {
-  const selectDiv = document.createElement('div');
-  const episodeSelect = document.createElement('select');
-  const option = document.createElement('option');
+  const selectDiv = addElement('div', null, 'select');
+  const episodeSelect = addElement('select', selectDiv, 'episode-select');
+  const option = addElement('option', episodeSelect);
+  option.value = '';
+  option.textContent = 'All episodes';
 
-  selectDiv.appendChild(episodeSelect);
-  episodeSelect.appendChild(option);
+  // selectro comes before search box
   document
     .querySelector('.inputs')
     .insertBefore(selectDiv, document.querySelector('.search'));
 
-  selectDiv.classList.add('select');
-  episodeSelect.classList.add('episode-select');
-  option.value = '';
-  option.textContent = 'All episodes';
-
   allEpisodes.forEach(({ name, season, number }) => {
-    const option = document.createElement('option');
-    episodeSelect.appendChild(option);
-
+    const option = addElement('option', episodeSelect);
     const seasonAndEpisode = formatEpisodeTitle(season, number);
-    option.textContent = `${seasonAndEpisode} – ${name}`;
+
     option.value = name;
+    option.textContent = `${seasonAndEpisode} – ${name}`;
   });
 
   episodeSelect.addEventListener('input', handleEpisodeSelect);
 }
 
 function makeEpisodesSearchBar() {
-  const searchBar = document.createElement('div');
-  const searchInput = document.createElement('input');
+  const inputs = document.querySelector('.inputs');
+  const searchBar = addElement('div', inputs, 'search');
+  const searchInput = addElement('input', searchBar, 'search-input');
 
-  document.querySelector('.inputs').appendChild(searchBar);
-  searchBar.appendChild(searchInput);
-
-  searchBar.classList.add('search');
-  searchInput.classList.add('search-input');
   searchInput.placeholder = 'Search...';
   searchInput.type = 'search';
 
@@ -180,46 +127,24 @@ function makePageForEpisodes(episodeList) {
   document.querySelector('.episodes')?.remove();
   document.querySelector('.episodes-info')?.remove();
 
-  const episodesContainer = document.createElement('article');
-  const episodesCounterInfo = document.createElement('p');
-
-  episodesContainer.classList.add('episodes');
-  episodesCounterInfo.classList.add('episodes-info');
-
-  main.appendChild(episodesCounterInfo);
-  main.appendChild(episodesContainer);
+  const episodesContainer = addElement('article', main, 'episodes');
+  const episodesCounterInfo = addElement('p', main, 'episodes-info');
 
   let displayMessage = getDisplayMessage(episodeList, allEpisodes, "episodes");
   episodesCounterInfo.textContent = displayMessage;
 
   episodeList.forEach(
     ({ name, season, number, image, summary, airstamp, runtime }) => {
-      const episodeSection = document.createElement('section');
-      const episodeTitle = document.createElement('h2');
-      const episodeInfo = document.createElement('div');
-      const episodeAirdate = document.createElement('p');
-      const episodeRuntime = document.createElement('p');
-      const episodeContent = document.createElement('div');
-      const episodeImage = document.createElement('img');
-      const episodeSummary = document.createElement('p');
-
-      episodesContainer.appendChild(episodeSection);
-      episodeSection.appendChild(episodeTitle);
-      episodeSection.appendChild(episodeInfo);
-      episodeInfo.appendChild(episodeAirdate);
-      episodeInfo.appendChild(episodeRuntime);
-      episodeSection.appendChild(episodeImage);
-      episodeSection.appendChild(episodeSummary);
-
-      episodeSection.classList.add('episode');
-      episodeTitle.classList.add('episode-title');
-      episodeInfo.classList.add('episode-info');
-      episodeAirdate.classList.add('episode-airdate');
-      episodeRuntime.classList.add('episode-runtime');
-      episodeImage.classList.add('episode-image');
-      episodeSummary.classList.add('episode-summary');
-
+      const episodeSection = addElement('section', episodesContainer, 'episode');
+      const episodeTitle = addElement('h2', episodeSection, 'episode-title');
+      const episodeInfo = addElement('div', episodeSection, 'episode-info');
+      const episodeAirdate = addElement('p', episodeInfo, 'episode-airdate');
+      const episodeRuntime = addElement('p', episodeInfo, 'episode-runtime');
+      const episodeImage = addElement('img', episodeSection, 'episode-image');
+      const episodeSummary = addElement('p', episodeSection, 'episode-summary');
+      
       const seasonAndEpisode = formatEpisodeTitle(season, number);
+
       episodeTitle.textContent = `${name} – ${seasonAndEpisode}`;
       episodeAirdate.textContent = `Airdate: ${formatAirdate(airstamp)}`;
       episodeRuntime.textContent = `Runtime: ${runtime} minutes`;
@@ -236,20 +161,19 @@ function makePageForEpisodes(episodeList) {
 
 function makeFooter() {
   const footer = document.createElement('footer');
-  const footerInfoElement = document.createElement('p');
+  const footerInfoElement = addElement('p', footer); 
   const footerInfoTextNodeBefore = document.createTextNode('Data from ');
   const footerInfoTextNodeAfter = document.createTextNode('.');
   const footerAnchorElement = document.createElement('a');
 
-  footer.appendChild(footerInfoElement);
+  footerAnchorElement.href = 'https://tvmaze.com';
+  footerAnchorElement.textContent = 'TVMaze.com';
+
   footerInfoElement.appendChild(footerInfoTextNodeBefore);
   footerInfoElement.appendChild(footerAnchorElement);
   footerInfoElement.appendChild(footerInfoTextNodeAfter);
 
   main.parentElement.insertBefore(footer, main.nextSibling);
-
-  footerAnchorElement.href = 'https://tvmaze.com';
-  footerAnchorElement.textContent = 'TVMaze.com';
 }
 
 // Page building helpers
@@ -260,20 +184,18 @@ function populateShowsSelector(shows) {
   showsSelect.textContent = '';
 
   // add default option to see all shows
-  const option = document.createElement('option');
+  const option = addElement('option', showsSelect);
   option.value = 'default';
   option.textContent = 'All Shows';
-  showsSelect.appendChild(option);
 
   shows
     // sort by name
     .sort((a, b) => a.name.localeCompare(b.name))
     // add select option for each show
     .forEach(({ name, id }) => {
-      const option = document.createElement('option');
-      option.textContent = name;
+      const option = addElement('option', showsSelect);
       option.value = id;
-      showsSelect.appendChild(option);
+      option.textContent = name;
     });
 
   // select first show from filtered shows to be visible instead of "Show All"
@@ -283,14 +205,11 @@ function populateShowsSelector(shows) {
 }
 
 function addButtonToShowsPage() {
-  const button = document.createElement('button');
   const inputs = document.querySelector('.inputs');
+  const buttonToShowsView = addElement('button', inputs, 'shows-page-btn');
+  buttonToShowsView.textContent = 'Browse Shows';
 
-  button.textContent = 'Browse Shows';
-  button.classList.add('shows-page-btn');
-  inputs.appendChild(button);
-
-  button.addEventListener('click', homepageHandler);
+  buttonToShowsView.addEventListener('click', homepageHandler);
 }
 
 function clearPage() {
@@ -496,6 +415,20 @@ function getDisplayMessage(selected, all, type) {
   } else {
     return 'Sorry, no match was found.';
   }
+}
+
+function addElement(element, parent, classNames) {
+  const el = document.createElement(element);
+  if (parent) {
+    parent.appendChild(el);
+  }
+  if (classNames) {
+    classNames.split(' ').forEach(name => {
+      el.classList.add(name);
+    })
+  }
+
+  return el;
 }
 
 // Data fetching
