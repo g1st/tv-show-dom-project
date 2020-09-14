@@ -30,11 +30,12 @@ function makeShowSelector(shows) {
   showsSelect.addEventListener('input', handleShowSelect);
 }
 
-function makeShowSearchBar() {
+function makeShowSearchBar(searchTerm = '') {
   const inputs = document.querySelector('.inputs');
   const searchBar = addElement('div', inputs, 'show-search');
   const searchInput = addElement('input', searchBar, 'show-search-input');
 
+  searchInput.value = searchTerm;
   searchInput.placeholder = 'Filter for...';
   searchInput.type = 'search';
 
@@ -56,7 +57,11 @@ function makePageForShows(showList) {
     ({ name, status, image, summary, genres, runtime, rating, id }) => {
       const showSection = addElement('section', showsContainer, 'show');
       const showWrapper = addElement('div', showSection, 'show-wrapper');
-      const showInfoAndTitleWrapper = addElement('div', showWrapper, 'show-info-wrapper');
+      const showInfoAndTitleWrapper = addElement(
+        'div',
+        showWrapper,
+        'show-info-wrapper'
+      );
       const showTitle = addElement('h2', showInfoAndTitleWrapper, 'show-title');
       const showInfo = addElement('div', showInfoAndTitleWrapper, 'show-info');
       const showRuntime = addElement('p', showInfo);
@@ -130,19 +135,23 @@ function makePageForEpisodes(episodeList) {
   const episodesContainer = addElement('article', main, 'episodes');
   const episodesCounterInfo = addElement('p', main, 'episodes-info');
 
-  let displayMessage = getDisplayMessage(episodeList, allEpisodes, "episodes");
+  let displayMessage = getDisplayMessage(episodeList, allEpisodes, 'episodes');
   episodesCounterInfo.textContent = displayMessage;
 
   episodeList.forEach(
     ({ name, season, number, image, summary, airstamp, runtime }) => {
-      const episodeSection = addElement('section', episodesContainer, 'episode');
+      const episodeSection = addElement(
+        'section',
+        episodesContainer,
+        'episode'
+      );
       const episodeTitle = addElement('h2', episodeSection, 'episode-title');
       const episodeInfo = addElement('div', episodeSection, 'episode-info');
       const episodeAirdate = addElement('p', episodeInfo, 'episode-airdate');
       const episodeRuntime = addElement('p', episodeInfo, 'episode-runtime');
       const episodeImage = addElement('img', episodeSection, 'episode-image');
       const episodeSummary = addElement('p', episodeSection, 'episode-summary');
-      
+
       const seasonAndEpisode = formatEpisodeTitle(season, number);
 
       episodeTitle.textContent = `${name} – ${seasonAndEpisode}`;
@@ -161,7 +170,7 @@ function makePageForEpisodes(episodeList) {
 
 function makeFooter() {
   const footer = document.createElement('footer');
-  const footerInfoElement = addElement('p', footer); 
+  const footerInfoElement = addElement('p', footer);
   const footerInfoTextNodeBefore = document.createTextNode('Data from ');
   const footerInfoTextNodeAfter = document.createTextNode('.');
   const footerAnchorElement = document.createElement('a');
@@ -218,10 +227,10 @@ function clearPage() {
   headerInputs.textContent = '';
 }
 
-function makeShowsPage() {
-  makeShowSelector(allShows);
-  makeShowSearchBar(allShows);
-  makePageForShows(allShows);
+function makeShowsPage(shows = allShows, searchTerm) {
+  makeShowSelector(shows);
+  makeShowSearchBar(searchTerm);
+  makePageForShows(shows);
 }
 
 function makeEpisodesPage(id) {
@@ -239,6 +248,10 @@ function makeEpisodesPage(id) {
         makeEpisodeSelector();
         makePageForEpisodes(data);
         addButtonToShowsPage();
+
+        const state = { episodeList: data };
+
+        history.pushState(state, 'episode');
       } else {
         throw new Error("Data didn't come from API");
       }
@@ -296,6 +309,10 @@ function handleShowSearch(event) {
 
   // construct shows view with search input applied
   makePageForShows(filteredShows);
+  history.replaceState(
+    { showList: filteredShows, searchTerm: searchValue },
+    'shows'
+  );
 
   // make shows selector only of filtered shows
   populateShowsSelector(filteredShows);
@@ -354,6 +371,27 @@ function homepageHandler() {
   // add shows related elements. No need to fetch - it's already in global variable
   makeShowsPage();
 }
+
+// add browser back/forward button navigation
+window.addEventListener('popstate', ({ state }) => {
+  if (!state) return;
+
+  const { showList, episodeList, searchTerm } = state;
+
+  if (showList) {
+    clearPage();
+    makeShowsPage(showList, searchTerm);
+  }
+
+  if (episodeList) {
+    allEpisodes = episodeList;
+    clearPage();
+    makeEpisodeSelector();
+    makeEpisodesSearchBar();
+    makePageForEpisodes(episodeList);
+    addButtonToShowsPage();
+  }
+});
 
 // Helpers
 
@@ -423,9 +461,9 @@ function addElement(element, parent, classNames) {
     parent.appendChild(el);
   }
   if (classNames) {
-    classNames.split(' ').forEach(name => {
+    classNames.split(' ').forEach((name) => {
       el.classList.add(name);
-    })
+    });
   }
 
   return el;
@@ -452,6 +490,8 @@ function fetchAllShows() {
     .then((data) => {
       loadInfo.remove();
       allShows = data;
+
+      history.pushState({ showList: data }, 'shows');
       return data;
     })
     .catch((error) => console.log(error));
