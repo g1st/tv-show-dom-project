@@ -16,6 +16,7 @@ function makeHeader() {
 
   title.textContent = 'Your best TV shows';
   main.parentElement.insertBefore(header, main);
+  makeToTopButton();
 }
 
 // Shows page elements
@@ -266,6 +267,14 @@ function makeEpisodesPage(id) {
     });
 }
 
+function makeToTopButton() {
+  const header = document.querySelector('header');
+  const toTopButton = addElement('div', header, 'top');
+  toTopButton.textContent = 'Top';
+
+  toTopButton.addEventListener('click', handleToTopButton);
+}
+
 // ====== End of Page building parts ======
 
 // Event Listeners
@@ -371,6 +380,26 @@ function homepageHandler() {
   // add shows related elements. No need to fetch - it's already in global variable
   makeShowsPage();
 }
+
+function handleToTopButton() {
+  window.scroll({
+    top: 0,
+    behavior: 'smooth',
+  });
+}
+
+window.addEventListener('scroll', (event) => {
+  const toTop = document.querySelector('.top');
+  const { pageYOffset } = window;
+
+  if (pageYOffset > 2000) {
+    toTop.style.visibility = 'visible';
+    toTop.style.opacity = 1;
+  } else {
+    toTop.style.visibility = 'hidden';
+    toTop.style.opacity = 0;
+  }
+});
 
 // add browser back/forward button navigation
 window.addEventListener('popstate', ({ state }) => {
