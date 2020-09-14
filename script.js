@@ -58,7 +58,6 @@ function makeShowSearchBar() {
 }
 
 function makePageForShows(showList) {
-  const totalShows = allShows.length;
   const showsContainer = document.createElement('article');
   const showsCounterInfo = document.createElement('p');
 
@@ -68,12 +67,7 @@ function makePageForShows(showList) {
   main.appendChild(showsCounterInfo);
   main.appendChild(showsContainer);
 
-  let displayMessage;
-  if (showList.length > 0) {
-    displayMessage = `Displaying ${showList.length}/${totalShows} shows.`;
-  } else {
-    displayMessage = `Sorry, no match was found.`;
-  }
+  let displayMessage = getDisplayMessage(showList, allShows);
   showsCounterInfo.textContent = displayMessage;
 
   showList.forEach(
@@ -177,8 +171,6 @@ function makeEpisodesSearchBar() {
 }
 
 function makePageForEpisodes(episodeList) {
-  const totalEpisodeNumber = allEpisodes.length;
-
   const episodesContainer = document.createElement('article');
   const episodesCounterInfo = document.createElement('p');
 
@@ -188,12 +180,7 @@ function makePageForEpisodes(episodeList) {
   main.appendChild(episodesCounterInfo);
   main.appendChild(episodesContainer);
 
-  let displayMessage;
-  if (episodeList.length > 0) {
-    displayMessage = `Displaying ${episodeList.length}/${totalEpisodeNumber} episodes.`;
-  } else {
-    displayMessage = `Sorry, no match was found.`;
-  }
+  let displayMessage = getDisplayMessage(episodeList, allEpisodes);
   episodesCounterInfo.textContent = displayMessage;
 
   episodeList.forEach(
@@ -504,6 +491,14 @@ function makeLoader() {
   main.appendChild(loader);
 
   return loader;
+}
+
+function getDisplayMessage(selected, all) {
+  if (selected.length > 0) {
+    return `Displaying ${selected.length}/${all.length} shows.`;
+  } else {
+    return 'Sorry, no match was found.';
+  }
 }
 
 // Data fetching
