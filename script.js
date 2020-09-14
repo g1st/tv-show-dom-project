@@ -58,6 +58,11 @@ function makeShowSearchBar() {
 }
 
 function makePageForShows(showList) {
+  // remove previous show elements (if exists) before adding again to avoid duplication
+  document.querySelector('.showsList')?.remove();
+  document.querySelector('.shows-info')?.remove();
+
+
   const showsContainer = document.createElement('article');
   const showsCounterInfo = document.createElement('p');
 
@@ -171,6 +176,10 @@ function makeEpisodesSearchBar() {
 }
 
 function makePageForEpisodes(episodeList) {
+  // remove current episodes info (if not null) before adding again to avoid duplication
+  document.querySelector('.episodes')?.remove();
+  document.querySelector('.episodes-info')?.remove();
+
   const episodesContainer = document.createElement('article');
   const episodesCounterInfo = document.createElement('p');
 
@@ -366,10 +375,6 @@ function handleShowSearch(event) {
     );
   });
 
-  // remove data before adding again to avoid duplication
-  document.querySelector('.showsList').remove();
-  document.querySelector('.shows-info').remove();
-
   // construct shows view with search input applied
   makePageForShows(filteredShows);
 
@@ -388,10 +393,6 @@ function handleEpisodeSelect(event) {
       return true;
     }
   });
-
-  // remove data before adding again to avoid duplication
-  document.querySelector('.episodes').remove();
-  document.querySelector('.episodes-info').remove();
 
   // clear search term
   document.querySelector('.search-input').value = '';
