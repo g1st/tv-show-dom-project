@@ -72,7 +72,7 @@ function makePageForShows(showList) {
   main.appendChild(showsCounterInfo);
   main.appendChild(showsContainer);
 
-  let displayMessage = getDisplayMessage(showList, allShows);
+  let displayMessage = getDisplayMessage(showList, allShows, 'shows');
   showsCounterInfo.textContent = displayMessage;
 
   showList.forEach(
@@ -189,7 +189,7 @@ function makePageForEpisodes(episodeList) {
   main.appendChild(episodesCounterInfo);
   main.appendChild(episodesContainer);
 
-  let displayMessage = getDisplayMessage(episodeList, allEpisodes);
+  let displayMessage = getDisplayMessage(episodeList, allEpisodes, "episodes");
   episodesCounterInfo.textContent = displayMessage;
 
   episodeList.forEach(
@@ -411,10 +411,6 @@ function handleEpisodeSearch(event) {
     );
   });
 
-  // remove data before adding again to avoid duplication
-  document.querySelector('.episodes').remove();
-  document.querySelector('.episodes-info').remove();
-
   // select 'All episodes' from selection list after typing in the search box as it's searching in all episodes
   document.querySelector('.episode-select').firstChild.selected = true;
 
@@ -494,9 +490,9 @@ function makeLoader() {
   return loader;
 }
 
-function getDisplayMessage(selected, all) {
+function getDisplayMessage(selected, all, type) {
   if (selected.length > 0) {
-    return `Displaying ${selected.length}/${all.length} shows.`;
+    return `Displaying ${selected.length}/${all.length} ${type}.`;
   } else {
     return 'Sorry, no match was found.';
   }
