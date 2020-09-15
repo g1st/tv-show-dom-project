@@ -300,8 +300,13 @@ function handleShowSelect(event) {
   } else {
     // specific show selected
     const selectedShow = document.getElementById(showId);
-    // scroll to selected show
-    selectedShow.scrollIntoView({ behavior: 'smooth' });
+
+    // scroll to selected show with an offset
+    // https://stackoverflow.com/a/56391657/5870230
+    const yOffset = -100;
+    const y =
+      selectedShow.getBoundingClientRect().top + window.pageYOffset + yOffset;
+    window.scrollTo({ top: y, behavior: 'smooth' });
   }
 }
 
