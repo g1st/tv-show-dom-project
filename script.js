@@ -48,11 +48,10 @@ function makePageForShows(showList) {
   document.querySelector('.showsList')?.remove();
   document.querySelector('.shows-info')?.remove();
 
-  const showsCounterInfo = addElement('p', main, 'shows-info');
+  const showsCounterInfo = addElement('p', main, 'counter');
   const showsContainer = addElement('article', main, 'showsList');
 
-  let displayMessage = getDisplayMessage(showList, allShows, 'shows');
-  showsCounterInfo.textContent = displayMessage;
+  updateDisplayCounter(showList, allShows, 'shows');
 
   showList.forEach(
     ({ name, status, image, summary, genres, runtime, rating, id }) => {
@@ -133,11 +132,10 @@ function makePageForEpisodes(episodeList) {
   document.querySelector('.episodes')?.remove();
   document.querySelector('.episodes-info')?.remove();
 
+  const episodesCounterInfo = addElement('p', main, 'counter');
   const episodesContainer = addElement('article', main, 'episodes');
-  const episodesCounterInfo = addElement('p', main, 'episodes-info');
 
-  let displayMessage = getDisplayMessage(episodeList, allEpisodes, 'episodes');
-  episodesCounterInfo.textContent = displayMessage;
+  updateDisplayCounter(episodeList, allEpisodes, 'episodes');
 
   episodeList.forEach(
     ({ name, season, number, image, summary, airstamp, runtime }) => {
@@ -288,17 +286,29 @@ function handleShowSelect(event) {
     // clear search term
     document.querySelector('.show-search-input').value = '';
 
-    // show all shows
-    clearPage();
-    makeShowsPage();
+    const shows = document.querySelectorAll('.show');
+
+    // reveal all shows
+    shows.forEach((show) => {
+      show.style.display = 'block';
+    });
+
+    // reveal all dropdown selection options
+    const options = document.querySelector('.shows-select').childNodes;
+    options.forEach((option) => {
+      option.style.display = 'block';
+    });
+
+    updateDisplayCounter(allShows, allShows, 'shows');
 
     // scroll to top
     window.scroll({
       top: 0,
       behavior: 'smooth',
     });
-  } else {
+
     // specific show selected
+  } else {
     const selectedShow = document.getElementById(showId);
 
     // scroll to selected show with an offset
@@ -321,15 +331,43 @@ function handleShowSearch(event) {
     );
   });
 
-  // construct shows view with search input applied
-  makePageForShows(filteredShows);
+  const filteredShowsTitles = filteredShows.map((show) => show.name);
+  const shows = document.querySelectorAll('.show');
+
+  // display filtered shows and hide the rest
+  shows.forEach((show) => {
+    const title = show.querySelector('.show-title').textContent;
+    if (filteredShowsTitles.includes(title)) {
+      show.style.display = 'block';
+    } else {
+      show.style.display = 'none';
+    }
+  });
+
+  updateDisplayCounter(filteredShows, allShows, 'shows');
+
+  // display dropdown selection options only of filtered shows
+  const showsOptions = document.querySelector('.shows-select').childNodes;
+  showsOptions.forEach((option) => {
+    if (
+      filteredShowsTitles.includes(option.textContent) ||
+      option.value === 'default'
+    ) {
+      option.style.display = 'block';
+    } else {
+      option.style.display = 'none';
+    }
+
+    // select first option matching search term
+    if (option.textContent === filteredShowsTitles[0]) {
+      option.selected = true;
+    }
+  });
+
   history.replaceState(
     { showList: filteredShows, searchTerm: searchValue },
     'shows'
   );
-
-  // make shows selector only of filtered shows
-  populateShowsSelector(filteredShows);
 }
 
 function handleEpisodeSelect(event) {
@@ -347,14 +385,16 @@ function handleEpisodeSelect(event) {
   // clear search term
   document.querySelector('.search-input').value = '';
 
-  // construct episodes view with search input applied
-  makePageForEpisodes(selectedEpisode);
+  // display filtered episodes and hide the rest
+  showOrHideEpisodes(selectedEpisode);
+
+  updateDisplayCounter(selectedEpisode, allEpisodes, 'episodes');
 }
 
 function handleEpisodeSearch(event) {
   const searchValue = event.target.value.toLowerCase();
 
-  const filteredShows = allEpisodes.filter(({ name, summary }) => {
+  const filteredEpisodes = allEpisodes.filter(({ name, summary }) => {
     return (
       name.toLowerCase().includes(searchValue) ||
       summary?.toLowerCase().includes(searchValue)
@@ -364,8 +404,10 @@ function handleEpisodeSearch(event) {
   // select 'All episodes' from selection list after typing in the search box as it's searching in all episodes
   document.querySelector('.episode-select').firstChild.selected = true;
 
-  // construct episodes view with search input applied
-  makePageForEpisodes(filteredShows);
+  // display filtered episodes and hide the rest
+  showOrHideEpisodes(filteredEpisodes);
+
+  updateDisplayCounter(filteredEpisodes, allEpisodes, 'episodes');
 }
 
 function handleShowLink(event) {
@@ -501,6 +543,33 @@ function addElement(element, parent, classNames) {
   }
 
   return el;
+}
+
+function updateDisplayCounter(selected, all, type) {
+  const counter = document.querySelector('.counter');
+  let displayMessage = getDisplayMessage(selected, all, type);
+  counter.textContent = displayMessage;
+}
+
+function showOrHideEpisodes(selectedEpisodes) {
+  const selectedEpisodesTitles = selectedEpisodes.map(
+    (episode) => episode.name
+  );
+
+  const episodes = document.querySelectorAll('.episode');
+
+  episodes.forEach((episode) => {
+    const title = episode
+      .querySelector('.episode-title')
+      .textContent.split('–')[0]
+      .trim();
+
+    if (selectedEpisodesTitles.includes(title)) {
+      episode.style.display = 'block';
+    } else {
+      episode.style.display = 'none';
+    }
+  });
 }
 
 // Data fetching

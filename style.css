@@ -108,11 +108,6 @@ header {
   color: var(--text-secondary);
 }
 
-.episodes-info {
-  padding: 3rem 0;
-  text-align: center;
-}
-
 .episode-select,
 .shows-select {
   display: block;
@@ -127,6 +122,11 @@ header {
 main {
   margin: 0 1rem;
   min-height: calc(100vh - var(--footer-height) - var(--header-height));
+}
+
+.counter {
+  padding: 3rem 0;
+  text-align: center;
 }
 
 
@@ -183,11 +183,6 @@ main {
   background: var(--card-bg);
   max-width: 1000px;
 
-}
-
-.shows-info {
-  text-align: center;
-  padding: 3rem 0;
 }
 
 .show-info {
