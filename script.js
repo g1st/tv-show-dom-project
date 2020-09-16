@@ -83,12 +83,47 @@ function makePageForShows(showList) {
       showImage.src = image?.medium || 'images/fallback-image.jpg';
       showImage.alt = name;
 
-      showSummary.innerHTML = summary || 'No summary for this show.';
+      if (!summary) {
+        showSummary.innerHTML = 'No summary for this show.';
+      } else {
+        // format summary html text to include "read more" option
+        const newSummary = summaryWithExpand(summary);
+        showSummary.innerHTML = `<p>${newSummary}</p>`;
+      }
 
       showTitle.addEventListener('click', handleShowLink);
       showTitle.addEventListener('keydown', handleShowLink);
     }
   );
+}
+
+function summaryWithExpand(summary) {
+  // get rid of <p>, </p>, <b> and </b>
+  const bareSummary = summary.replace(/(<p>)|(<\/p>)|(<b>)|(<\/b>)/gi, ' ');
+
+  // separate and trim sentences
+  const summarySentences = bareSummary
+    // split summaries on ". " (most of the time that's the end of a sentence but sometimes it's not, but it's ok for me)
+    .split('. ')
+    // get rid of extra white space
+    .map((sentence) => sentence.trim())
+    // get rid of last item which is an empty string
+    .slice(0, -1);
+
+  // add read more option when there is more than 3 sentences
+  if (summarySentences.length > 3) {
+    const visibleSummary = summarySentences.slice(0, 3).join('. ');
+
+    const hiddenSummary = summarySentences.slice(3).join('. ') + '.</span>';
+
+    const finalSummaryHTMLString = [visibleSummary, hiddenSummary].join(
+      '. <span class="show-more">Read more.</span><span class="hide-text">'
+    );
+
+    return finalSummaryHTMLString;
+  } else {
+    return summary;
+  }
 }
 
 // Episodes page elements
@@ -469,6 +504,8 @@ window.addEventListener('popstate', ({ state }) => {
   }
 });
 
+window.addEventListener('click', expandHandler);
+
 // Helpers
 
 function formatAirdate(date) {
@@ -501,17 +538,18 @@ function getShowTitleFromId(showId) {
   return allShows.filter((show) => show.id == showId)[0].name;
 }
 
-function setup() {
-  makeHeader();
-  makeFooter();
-  fetchAllShows()
-    .then(() => {
-      // construct shows page only when data arrives
-      makeShowsPage();
-    })
-    .catch((error) => {
-      main.textContent = 'Error while fetching shows, please try again.';
-    });
+function expandHandler(e) {
+  // if it's not .show-more element - ignore it
+  if (e.target.classList.value !== 'show-more') {
+    return;
+  }
+
+  // display hidden text
+  const hiddenSummaryElement = e.target.nextElementSibling;
+  hiddenSummaryElement.style.display = 'inline';
+
+  // remove Read More span element
+  e.target.remove();
 }
 
 function makeLoader() {

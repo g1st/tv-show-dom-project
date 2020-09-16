@@ -290,6 +290,23 @@ footer a:hover:before {
   cursor: pointer;
 }
 
+
+.show-more {
+  padding: 0.1em 0.25em;
+  background-color: var(--background-color);
+
+  text-decoration: underline;
+}
+
+.show-more:hover,
+.show-more:active {
+  cursor: pointer;
+}
+
+.hide-text {
+  display: none;
+}
+
 /*----------  Media queries  ----------*/
 
 /* 600px */
