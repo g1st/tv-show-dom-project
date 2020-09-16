@@ -44,25 +44,6 @@ body {
   background: var(--background-color);
 }
 
-.top {
-  position: fixed;
-  top: 2%;
-  right: 1%;
-  padding: 0.5em;
-  border-radius: 50px;
-  background-color: #fff;
-  transition: all .2s ease-out;
-  box-shadow: 0 6px 14px var(--shadow);
-  visibility: hidden;
-  opacity: 0;
-}
-
-.top:hover,
-.top:active {
-  cursor: pointer;
-  color: var(--link-dark);
-}
-
 /*----------  HEADER  ----------*/
 
 header {
@@ -290,6 +271,24 @@ footer a:hover:before {
   cursor: pointer;
 }
 
+.top {
+  position: fixed;
+  top: 2%;
+  right: 1%;
+  padding: 0.5em;
+  border-radius: 50px;
+  background-color: #fff;
+  transition: all .2s ease-out;
+  box-shadow: 0 6px 14px var(--shadow);
+  visibility: hidden;
+  opacity: 0;
+}
+
+.top:hover,
+.top:active {
+  cursor: pointer;
+  color: var(--link-dark);
+}
 
 .show-more {
   padding: 0.1em 0.25em;

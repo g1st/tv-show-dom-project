@@ -4,6 +4,19 @@ let allShows;
 
 window.onload = setup;
 
+function setup() {
+  makeHeader();
+  makeFooter();
+  fetchAllShows()
+    .then(() => {
+      // construct shows page only when data arrives
+      makeShowsPage();
+    })
+    .catch((error) => {
+      main.textContent = 'Error while fetching shows, please try again.';
+    });
+}
+
 // ====== Page building parts ======
 
 // Header
