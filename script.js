@@ -1,6 +1,7 @@
 const main = document.getElementById('root');
 let allEpisodes;
 let allShows;
+let sortByRating = false;
 
 window.onload = setup;
 
@@ -42,6 +43,40 @@ function makeShowSelector(shows) {
   populateShowsSelector(shows);
 
   showsSelect.addEventListener('input', handleShowSelect);
+}
+
+function makeShowSortSelector() {
+  const inputs = document.querySelector('.inputs');
+  const sortSelectorParent = addElement('div', inputs, 'shows');
+  const sortSelector = addElement('select', sortSelectorParent, 'shows-sort');
+
+  const optionSortByName = addElement('option', sortSelector);
+  optionSortByName.value = 'name';
+  optionSortByName.textContent = 'Sort by name';
+
+  const optionSortByRating = addElement('option', sortSelector);
+  optionSortByRating.value = 'rating';
+  optionSortByRating.textContent = 'Sort by rating';
+
+  if (sortByRating) {
+    optionSortByRating.selected = true;
+  } else {
+    optionSortByName.selected = true;
+  }
+
+  sortSelector.addEventListener('input', handleSortSelector);
+}
+
+function handleSortSelector(e) {
+  const sortingBy = e.target.value;
+
+  if (sortingBy === 'name') {
+    sortByRating = false;
+  } else {
+    sortByRating = true;
+  }
+  clearPage();
+  makeShowsPage();
 }
 
 function makeShowSearchBar(searchTerm = '') {
@@ -245,8 +280,6 @@ function populateShowsSelector(shows) {
   option.textContent = 'All Shows';
 
   shows
-    // sort by name
-    .sort((a, b) => a.name.localeCompare(b.name))
     // add select option for each show
     .forEach(({ name, id }) => {
       const option = addElement('option', showsSelect);
@@ -275,9 +308,18 @@ function clearPage() {
 }
 
 function makeShowsPage(shows = allShows, searchTerm) {
-  makeShowSelector(shows);
+  let sortedShows;
+  if (sortByRating) {
+    // sort by rating high to low
+    sortedShows = shows.sort((a, b) => b.rating.average - a.rating.average);
+  } else {
+    // sort by name
+    sortedShows = shows.sort((a, b) => a.name.localeCompare(b.name));
+  }
+  makeShowSelector(sortedShows);
+  makeShowSortSelector();
   makeShowSearchBar(searchTerm);
-  makePageForShows(shows);
+  makePageForShows(sortedShows);
 }
 
 function makeEpisodesPage(id) {

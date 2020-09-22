@@ -73,10 +73,6 @@ header {
   padding: 0 1rem 2rem;
 }
 
-.shows {
-  margin-top: 3.5rem;
-}
-
 .search-input,
 .show-search-input {
   width: 100%;
@@ -90,7 +86,8 @@ header {
 }
 
 .episode-select,
-.shows-select {
+.shows-select,
+.shows-sort {
   display: block;
   max-width: 30rem;
   width: 100%;
